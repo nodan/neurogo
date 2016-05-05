@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	n := neural.NewNetwork(2, []int{2,3,1})
+	n := neural.NewNetwork(2, []int{2, 1})
 	n.RandomizeSynapses()
 	result := n.Calculate([]float64{0.6, 0.7})
 	fmt.Printf("Result: %v\n", result)
@@ -22,7 +22,10 @@ func main() {
 	for i := 0; i < 10; i++ {
 		x := rand.Float64()
 		y := rand.Float64()
-		fmt.Printf("%v * %v = %v\n", x, y,	n.Calculate([]float64{x, y}))
+		z := n.Calculate([]float64{x, y})
+		fmt.Printf("%v * %v = %v <%v> <%v>\n", x, y, z,
+			learn.Evaluation(n, []float64{x, y}, []float64{x * y}),
+			z[0]-x*y)
 	}
 
 }
