@@ -1,19 +1,26 @@
 package gogame
 
 const (
+	// board size
 	n = 3
+
+	// colors
 	empty = 0
 	black = 1
 	white = 2
 )
 
 type color byte
+
+// the board
 type grid [n*n] color
 
+// transform a board coordinate into a linear array index
 func xy(x, y int) int {
 	return n*y+x
 }
 
+// invert a color black<->white
 func invert(c color) color {
 	switch c {
 	case black:
@@ -25,6 +32,7 @@ func invert(c color) color {
 	}
 }
 
+// find neighbors of a point
 func neighbors(xy int) []int {
 	rc := make([]int, 0, 4)
 	if xy%n>=1 {
@@ -46,30 +54,83 @@ func neighbors(xy int) []int {
 	return rc
 }
 
-func (g *grid) liberties(xy int) int {
-	// to do: recurse
+// find up to max liberties of a chain
+func (g *grid) findLiberties(xy int, max int) int {
+	libs := 0
+	c := g[xy]
+	opposite := invert(c)
+	g[xy] = opposite // don't look here again
+
+	// look at the neighbors
 	for _, nxy := range neighbors(xy) {
-		if g[nxy]==empty {
-			return 1
+		switch g[nxy] {
+		case empty:
+			// count liberty
+			libs += 1
+			g[nxy] = opposite // don't look here again
+
+			// count up to max libs
+			if libs>=max {
+				return libs
+			}
+		case c:
+			// recursively count liberties of neighbor
+			libs += g.findLiberties(nxy, max-libs)
+
+			// count up to max libs
+			if libs>=max {
+				return libs
+			}
 		}
 	}
 
-	return 0
+	// the liberties found so far
+	return libs
 }
 
-func (g *grid) mkmove(xy int, c color) *grid {
-	g[xy] = c
-	t := g
+// find up to max liberties of a chain
+func (g *grid) liberties(xy int, max int) int {
+	t := *g
+	return t.findLiberties(xy, max)
+}
+
+// remove a chain of stones
+func (g *grid) remove(xy int) *grid {
+	c := g[xy]
+	g[xy] = empty
 	for _, nxy := range neighbors(xy) {
-		if t[nxy]==invert(c) && t.liberties(nxy)==0 {
-			// remove captured stones
-			g[nxy] = empty
+		if g[nxy]==c {
+			g.remove(nxy)
 		}
 	}
 
-	if g.liberties(xy)==0 {
+	return g
+}
+
+// play a move
+func (g *grid) mkmove(xy int, c color) *grid {
+	if g[xy]!=empty {
+		// don't play on non-empty points
+		return nil
+	}
+
+	// play a move
+	g[xy] = c
+
+	// check neighbors
+	for _, nxy := range neighbors(xy) {
+		t := *g
+		if t[nxy]==invert(c) && t.findLiberties(nxy, 1)==0 {
+			// remove captured stones
+			g.remove(nxy)
+		}
+	}
+
+	// check liberties of the move played
+	t := *g
+	if t.findLiberties(xy, 1)==0 {
 		// illegal move, no liberties
-		g[xy] = empty
+		return nil
 	}
 
 	return g
