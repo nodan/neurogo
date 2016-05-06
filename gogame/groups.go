@@ -75,10 +75,14 @@ func (g *grid) categorizeGroups() []Group {
 			} else {
 				gp = agp
 			}
+			println(gps)
 			fmt.Printf("GP: %v\n", gp)
+			println(gp)
 			gp.stoneCoords = append(gp.stoneCoords, i)
 			fmt.Printf("GP: %v\n", gp)
+			println(gp)
 			fmt.Printf("GPS: %v\n", grps)
+			println(gps)
 		} else {
 			newGrp()
 		}
