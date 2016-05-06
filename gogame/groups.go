@@ -11,29 +11,30 @@ type Group struct {
 	stoneCoords []byte
 }
 
-func leftOf(coords byte) (bool, byte) {
-	if coords%n == 0 {
+func leftOf(xy byte) (bool, byte) {
+	if xy%n == 0 {
 		return false, 0
 	} else {
-		return true, coords - 1
+		return true, xy - 1
 	}
 }
 
-func above(coords byte) (bool, byte) {
-	if coords < n {
+func above(xy byte) (bool, byte) {
+	if xy < n {
 		return false, 0
 	} else {
-		return true, coords - n
+		return true, xy - n
 	}
 }
 
 // findGroup finds the index of group of the expected side/color at the given coordinates.
 // If it is not found, it returns -1, nil
-func findGroup(grps []*Group, ok bool, coords byte, side color) (bool, int, *Group) {
-	fmt.Printf("findGroup %v %v %v\n", grps, coords, side)
+func findGroup(grps []*Group, fn func(byte) (bool, byte), xy byte, side color) (bool, int, *Group) {
+	fmt.Printf("findGroup %v %v %v\n", grps, xy, side)
+	ok, xy2 := fn(xy)
 	if ok {
 		for i, gp := range grps {
-			r := bytes.IndexByte(gp.stoneCoords, coords)
+			r := bytes.IndexByte(gp.stoneCoords, xy2)
 			if gp.side == side && r >= 0 {
 				println("found", i)
 				return true, i, gp
@@ -44,35 +45,39 @@ func findGroup(grps []*Group, ok bool, coords byte, side color) (bool, int, *Gro
 	return false, -1, nil
 }
 
+func firstNonNil(gs ...*Group) *Group {
+	for _, gp := range gs {
+		if gp != nil {
+			return gp
+		}
+	}
+	return nil
+}
 
 
 // categorizeGroups finds all groups
 func (g *grid) categorizeGroups() []*Group {
 	grps := make([]*Group, 0)
 	var i byte
-	newGrp := func() {
-		grps = append(grps, &Group{g[i], []byte{i}})
-	}
 	for i = 0; i < n*n; i++ {
 		if g[i] == empty {
 			continue
 		}
-		var ok bool
-		var coords byte
-		ok, coords = leftOf(i)
-		lok, _, lgp := findGroup(grps, ok, coords, g[i])
-		ok, coords = above(i)
-		aok, _, agp := findGroup(grps, ok, coords, g[i])
-		if lok || aok {
-			var gp *Group
-			if lok {
-				gp = lgp
+		lok, _, lgp := findGroup(grps, leftOf, i, g[i])
+		aok, aix, agp := findGroup(grps, above, i, g[i])
+		if lok && aok {
+			if lgp == agp {
+				lgp.stoneCoords = append(lgp.stoneCoords, i)
 			} else {
-				gp = agp
+				lgp.stoneCoords = append(lgp.stoneCoords, agp.stoneCoords...)
+				lgp.stoneCoords = append(lgp.stoneCoords, i)
+				grps = append(grps[:aix], grps[aix+1:]...)
 			}
+		} else if lok || aok {
+			gp := firstNonNil(lgp, agp)
 			gp.stoneCoords = append(gp.stoneCoords, i)
 		} else {
-			newGrp()
+			grps = append(grps, &Group{g[i], []byte{i}})
 		}
 	}
 	return grps
