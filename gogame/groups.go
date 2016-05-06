@@ -2,12 +2,11 @@ package gogame
 
 import (
 	"bytes"
-//	"fmt"
+	//	"fmt"
 )
 
-
 type Group struct {
-	side   color
+	side        color
 	stoneCoords []byte
 }
 
@@ -50,7 +49,6 @@ func firstNonNil(gs ...*Group) *Group {
 	}
 	return nil
 }
-
 
 // categorizeGroups finds all groups
 func (g *grid) categorizeGroups() []*Group {

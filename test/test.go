@@ -1,10 +1,10 @@
 package main
 
 import (
-	"math/rand"
+	"fmt"
 	"github.com/NOX73/go-neural"
 	"github.com/NOX73/go-neural/learn"
-	"fmt"
+	"math/rand"
 )
 
 func main() {

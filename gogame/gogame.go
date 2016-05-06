@@ -13,11 +13,11 @@ const (
 type color byte
 
 // the board
-type grid [n*n] color
+type grid [n * n]color
 
 // transform a board coordinate into a linear array index
 func xy(x, y int) int {
-	return n*y+x
+	return n*y + x
 }
 
 // invert a color black<->white
@@ -35,19 +35,19 @@ func invert(c color) color {
 // find neighbors of a point
 func neighbors(xy int) []int {
 	rc := make([]int, 0, 4)
-	if xy%n>=1 {
+	if xy%n >= 1 {
 		rc = append(rc, xy-1)
 	}
 
-	if xy%n+1!=n {
+	if xy%n+1 != n {
 		rc = append(rc, xy+1)
 	}
 
-	if xy>=n {
+	if xy >= n {
 		rc = append(rc, xy-n)
 	}
 
-	if xy+n<n*n {
+	if xy+n < n*n {
 		rc = append(rc, xy+n)
 	}
 
@@ -70,7 +70,7 @@ func (g *grid) findLiberties(xy int, max int) int {
 			g[nxy] = opposite // don't look here again
 
 			// count up to max libs
-			if libs>=max {
+			if libs >= max {
 				return libs
 			}
 		case c:
@@ -78,7 +78,7 @@ func (g *grid) findLiberties(xy int, max int) int {
 			libs += g.findLiberties(nxy, max-libs)
 
 			// count up to max libs
-			if libs>=max {
+			if libs >= max {
 				return libs
 			}
 		}
@@ -99,7 +99,7 @@ func (g *grid) remove(xy int) *grid {
 	c := g[xy]
 	g[xy] = empty
 	for _, nxy := range neighbors(xy) {
-		if g[nxy]==c {
+		if g[nxy] == c {
 			g.remove(nxy)
 		}
 	}
@@ -109,11 +109,11 @@ func (g *grid) remove(xy int) *grid {
 
 // count liberties of a chain of stones
 func (counter *grid) count(xy int, g *grid) *grid {
-	if c := g[xy]; c!= empty {
+	if c := g[xy]; c != empty {
 		g[xy] = empty
 		counter[xy]++
 		for _, nxy := range neighbors(xy) {
-			if g[nxy]==c {
+			if g[nxy] == c {
 				counter.count(nxy, g)
 			}
 		}
@@ -123,7 +123,7 @@ func (counter *grid) count(xy int, g *grid) *grid {
 
 // play a move
 func (g *grid) mkmove(xy int, c color) *grid {
-	if g[xy]!=empty {
+	if g[xy] != empty {
 		// don't play on non-empty points
 		return nil
 	}
@@ -134,7 +134,7 @@ func (g *grid) mkmove(xy int, c color) *grid {
 	// check neighbors
 	for _, nxy := range neighbors(xy) {
 		t := *g
-		if t[nxy]==invert(c) && t.findLiberties(nxy, 1)==0 {
+		if t[nxy] == invert(c) && t.findLiberties(nxy, 1) == 0 {
 			// remove captured stones
 			g.remove(nxy)
 		}
@@ -142,7 +142,7 @@ func (g *grid) mkmove(xy int, c color) *grid {
 
 	// check liberties of the move played
 	t := *g
-	if t.findLiberties(xy, 1)==0 {
+	if t.findLiberties(xy, 1) == 0 {
 		// undo the move
 		g[xy] = empty
 
@@ -157,14 +157,14 @@ func (g *grid) mkmove(xy int, c color) *grid {
 // every group having exactly two liberties
 func (g *grid) finished() bool {
 	var c grid
-	for xy:=0; xy<n*n; xy++ {
+	for xy := 0; xy < n*n; xy++ {
 		// find empty points
-		if g[xy]==empty {
+		if g[xy] == empty {
 			t := *g
 			nl := neighbors(xy)
 			for _, nxy := range nl {
 				// same color for all adjacent points
-				if g[nxy]==empty || g[nxy]!=g[nl[0]] {
+				if g[nxy] == empty || g[nxy] != g[nl[0]] {
 					return false
 				}
 			}
@@ -180,9 +180,9 @@ func (g *grid) finished() bool {
 	}
 
 	// find non-empty points
-	for xy:=0; xy<n*n; xy++ {
+	for xy := 0; xy < n*n; xy++ {
 		// all chains must have 2 liberties
-		if g[xy]!=empty && c[xy]!=2 {
+		if g[xy] != empty && c[xy] != 2 {
 			return false
 		}
 	}

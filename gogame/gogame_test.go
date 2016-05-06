@@ -2,11 +2,11 @@ package gogame
 
 import (
 	"testing"
-//	"fmt"
+	//	"fmt"
 )
 
 func TestXyAndMkMove(t *testing.T) {
-	if invert(black)!=white || invert(white)!=black || invert(empty)!=empty {
+	if invert(black) != white || invert(white) != black || invert(empty) != empty {
 		t.Errorf("Failed to invert colors\n")
 	}
 
@@ -24,7 +24,7 @@ func TestXyAndMkMove(t *testing.T) {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	if l := g.liberties(xy(1,1), 4); l!=2 {
+	if l := g.liberties(xy(1, 1), 4); l != 2 {
 		t.Errorf("Expected 2 liberties, but got %d\n", l)
 	}
 
@@ -35,15 +35,15 @@ func TestXyAndMkMove(t *testing.T) {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	if g.mkmove(xy(0, 0), white)!=nil {
+	if g.mkmove(xy(0, 0), white) != nil {
 		t.Errorf("Allowed illegal move at (0, 0)")
 	}
 
-	if g.mkmove(xy(1, 1), white)!=nil {
+	if g.mkmove(xy(1, 1), white) != nil {
 		t.Errorf("Allowed illegal move at (1, 1)")
 	}
 
-	if g.mkmove(xy(2, 2), white)!=nil {
+	if g.mkmove(xy(2, 2), white) != nil {
 		t.Errorf("Allowed illegal move at (2, 2)")
 	}
 
@@ -112,7 +112,7 @@ func TestXyAndMkMove(t *testing.T) {
 	}
 
 	g = grid{}
-	g.mkmove(xy(1,0), white).mkmove(xy(0,1), white)
+	g.mkmove(xy(1, 0), white).mkmove(xy(0, 1), white)
 	g[0] = black
 	if g.legal() {
 		t.Errorf("Captured stone not recognized")
