@@ -35,7 +35,31 @@ func neighbors(xy int) []int {
 	return rc
 }
 
+func (g *grid) liberties(xy int) int {
+	// to do: recurse
+	for _, nxy := range neighbors(xy) {
+		if g[nxy]==empty {
+			return 1
+		}
+	}
+
+	return 0
+}
+
 func (g *grid) mkmove(xy int, c color) *grid {
 	g[xy] = c
+
+	for _, nxy := range neighbors(xy) {
+		if g.liberties(nxy)==0 {
+			// remove captured stones
+			g[nxy] = empty
+		}
+	}
+
+	if g.liberties(xy)==0 {
+		// illegal move, no liberties
+		g[xy] = empty
+	}
+
 	return g
 }
