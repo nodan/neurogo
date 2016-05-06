@@ -14,6 +14,7 @@ func xy(x, y int) int {
 	return n*y+x
 }
 
-func mkmove(g *grid, xy int, c color) {
+func (g *grid) mkmove(xy int, c color) *grid {
 	g[xy] = c
+	return g
 }
