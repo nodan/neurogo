@@ -84,6 +84,18 @@ func (g *grid) liberties(xy int, max int) int {
 	return t.findLiberties(xy, max)
 }
 
+func (g *grid) remove(xy int) *grid {
+	c := g[xy]
+	g[xy] = empty
+	for _, nxy := range neighbors(xy) {
+		if g[nxy]==c {
+			g.remove(nxy)
+		}
+	}
+
+	return g
+}
+
 func (g *grid) mkmove(xy int, c color) *grid {
 	if g[xy]!=empty {
 		return nil
@@ -94,7 +106,7 @@ func (g *grid) mkmove(xy int, c color) *grid {
 		t := *g
 		if t[nxy]==invert(c) && t.findLiberties(nxy, 1)==0 {
 			// remove captured stones
-			g[nxy] = empty
+			g.remove(nxy)
 		}
 	}
 
