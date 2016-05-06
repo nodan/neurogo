@@ -118,7 +118,6 @@ func (counter *grid) count(xy int, g *grid) *grid {
 			}
 		}
 	}
-
 	return counter
 }
 
@@ -154,7 +153,8 @@ func (g *grid) mkmove(xy int, c color) *grid {
 	return g
 }
 
-// check if the game is finished
+// check if the game is finished in the sense of there not being to adjacent empty points and
+// every group having exactly two liberties
 func (g *grid) finished() bool {
 	var c grid
 	for xy:=0; xy<n*n; xy++ {
@@ -172,6 +172,9 @@ func (g *grid) finished() bool {
 			for _, nxy := range nl {
 				// count liberties
 				c.count(nxy, &t)
+				if c[nxy] > 2 { // abort early
+					return false
+				}
 			}
 		}
 	}

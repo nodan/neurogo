@@ -55,4 +55,37 @@ func TestXyAndMkMove(t *testing.T) {
 	if !g.finished() {
 		t.Errorf("Game not finished")
 	}
+
+	// Test
+	// OOO
+	// OOO
+	// .O.
+	// is finished
+	g = grid{}
+	for x := 0; x < 3; x++ {
+		for y := 0; y < 2; y++ {
+			g.mkmove(xy(x, y), white)
+		}
+	}
+	g.mkmove(xy(1, 2), white)
+	if !g.finished() {
+		t.Errorf("Game not finished")
+	}
+
+	// Test
+	// OOO
+	// OOO
+	// OO.
+	// is not finished
+	g = grid{}
+	for x := 0; x < 3; x++ {
+		for y := 0; y < 3; y++ {
+			g.mkmove(xy(x, y), white)
+		}
+	}
+	g.mkmove(xy(2, 2), empty)
+	if g.finished() {
+		t.Errorf("Game not finished")
+	}
+
 }
