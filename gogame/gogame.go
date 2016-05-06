@@ -46,28 +46,55 @@ func neighbors(xy int) []int {
 	return rc
 }
 
-func (g *grid) liberties(xy int) int {
-	// to do: recurse
+func (g *grid) findLiberties(xy int, max int) int {
+	libs := 0
+	c := g[xy]
+	opposite := invert(c)
+	g[xy] = opposite // don't look here again
+
+	// look at the neighbors
 	for _, nxy := range neighbors(xy) {
-		if g[nxy]==empty {
-			return 1
+		switch g[nxy] {
+		case empty:
+			// count liberty
+			libs += 1
+			g[nxy] = opposite // don't look here again
+
+			// count up to max libs
+			if libs>=max {
+				return libs
+			}
+		case c:
+			// recursively count liberties of neighbor
+			libs += g.findLiberties(nxy, max-libs)
+
+			// count up to max libs
+			if libs>=max {
+				return libs
+			}
 		}
 	}
 
-	return 0
+	// the liberties found so far
+	return libs
+}
+
+func (g *grid) liberties(xy int, max int) int {
+	t := *g
+	return t.findLiberties(xy, max)
 }
 
 func (g *grid) mkmove(xy int, c color) *grid {
 	g[xy] = c
-	t := g
+	t := *g
 	for _, nxy := range neighbors(xy) {
-		if t[nxy]==invert(c) && t.liberties(nxy)==0 {
+		if t[nxy]==invert(c) && t.findLiberties(nxy, 1)==0 {
 			// remove captured stones
 			g[nxy] = empty
 		}
 	}
 
-	if g.liberties(xy)==0 {
+	if t.findLiberties(xy, 1)==0 {
 		// illegal move, no liberties
 		g[xy] = empty
 	}
