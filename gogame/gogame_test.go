@@ -31,4 +31,8 @@ func TestXyAndMkMove(t *testing.T) {
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
+
+	if g.mkmove(xy(1, 1), white)!=nil {
+		t.Errorf("Allowed illegal move at (1, 1)")
+	}
 }
