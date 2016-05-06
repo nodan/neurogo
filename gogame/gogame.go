@@ -1,19 +1,26 @@
 package gogame
 
 const (
+	// board size
 	n = 3
+
+	// colors
 	empty = 0
 	black = 1
 	white = 2
 )
 
 type color byte
+
+// the board
 type grid [n*n] color
 
+// transform a board coordinate into a linear array index
 func xy(x, y int) int {
 	return n*y+x
 }
 
+// invert a color black<->white
 func invert(c color) color {
 	switch c {
 	case black:
@@ -25,6 +32,7 @@ func invert(c color) color {
 	}
 }
 
+// find neighbors of a point
 func neighbors(xy int) []int {
 	rc := make([]int, 0, 4)
 	if xy%n>=1 {
@@ -46,6 +54,7 @@ func neighbors(xy int) []int {
 	return rc
 }
 
+// find up to max liberties of a chain
 func (g *grid) findLiberties(xy int, max int) int {
 	libs := 0
 	c := g[xy]
@@ -79,11 +88,13 @@ func (g *grid) findLiberties(xy int, max int) int {
 	return libs
 }
 
+// find up to max liberties of a chain
 func (g *grid) liberties(xy int, max int) int {
 	t := *g
 	return t.findLiberties(xy, max)
 }
 
+// remove a chain of stones
 func (g *grid) remove(xy int) *grid {
 	c := g[xy]
 	g[xy] = empty
@@ -96,12 +107,17 @@ func (g *grid) remove(xy int) *grid {
 	return g
 }
 
+// play a move
 func (g *grid) mkmove(xy int, c color) *grid {
 	if g[xy]!=empty {
+		// don't play on non-empty points
 		return nil
 	}
 
+	// play a move
 	g[xy] = c
+
+	// check neighbors
 	for _, nxy := range neighbors(xy) {
 		t := *g
 		if t[nxy]==invert(c) && t.findLiberties(nxy, 1)==0 {
@@ -110,6 +126,7 @@ func (g *grid) mkmove(xy int, c color) *grid {
 		}
 	}
 
+	// check liberties of the move played
 	t := *g
 	if t.findLiberties(xy, 1)==0 {
 		// illegal move, no liberties
