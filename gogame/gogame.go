@@ -107,6 +107,21 @@ func (g *grid) remove(xy int) *grid {
 	return g
 }
 
+// count liberties of a chain of stones
+func (counter *grid) count(xy int, g *grid) *grid {
+	if c := g[xy]; c!= empty {
+		g[xy] = empty
+		counter[xy]++
+		for _, nxy := range neighbors(xy) {
+			if g[nxy]==c {
+				counter.count(nxy, g)
+			}
+		}
+	}
+
+	return counter
+}
+
 // play a move
 func (g *grid) mkmove(xy int, c color) *grid {
 	if g[xy]!=empty {
@@ -129,9 +144,45 @@ func (g *grid) mkmove(xy int, c color) *grid {
 	// check liberties of the move played
 	t := *g
 	if t.findLiberties(xy, 1)==0 {
+		// undo the move
+		g[xy] = empty
+
 		// illegal move, no liberties
 		return nil
 	}
 
 	return g
+}
+
+// check if the game is finished
+func (g *grid) finished() bool {
+	var c grid
+	for xy:=0; xy<n*n; xy++ {
+		// find empty points
+		if g[xy]==empty {
+			t := *g
+			nl := neighbors(xy)
+			for _, nxy := range nl {
+				// same color for all adjacent points
+				if g[nxy]==empty || g[nxy]!=g[nl[0]] {
+					return false
+				}
+			}
+
+			for _, nxy := range nl {
+				// count liberties
+				c.count(nxy, &t)
+			}
+		}
+	}
+
+	// find non-empty points
+	for xy:=0; xy<n*n; xy++ {
+		// all chains must have 2 liberties
+		if g[xy]!=empty && c[xy]!=2 {
+			return false
+		}
+	}
+
+	return true
 }
