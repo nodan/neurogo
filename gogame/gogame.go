@@ -1,8 +1,5 @@
 package gogame
 
-import "os"
-import "testing"
-
 const (
 	n = 3
 	empty = 0
@@ -19,8 +16,4 @@ func xy(x, y int) int {
 
 func mkmove(g *grid, xy int, c color) {
 	g[xy] = c
-}
-
-func TestMain(m *testing.M) {
-	os.Exit(m.Run())
 }
