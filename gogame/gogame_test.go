@@ -1,6 +1,9 @@
 package gogame
 
-import "testing"
+import (
+	"testing"
+//	"fmt"
+)
 
 func TestXyAndMkMove(t *testing.T) {
 	if invert(black)!=white || invert(white)!=black || invert(empty)!=empty {
@@ -86,6 +89,33 @@ func TestXyAndMkMove(t *testing.T) {
 	g.mkmove(xy(2, 2), empty)
 	if g.finished() {
 		t.Errorf("Game not finished")
+	}
+
+	g = grid{}
+	if !g.legal() {
+		t.Errorf("Empty board not legal")
+	}
+
+	g = grid{}
+	for x := 0; x < 3; x++ {
+		for y := 0; y < 3; y++ {
+			g.mkmove(xy(x, y), white)
+		}
+	}
+	if !g.legal() {
+		t.Errorf("Almost full board not legal")
+	}
+
+	g[8] = white
+	if g.legal() {
+		t.Errorf("Full board legal")
+	}
+
+	g = grid{}
+	g.mkmove(xy(1,0), white).mkmove(xy(0,1), white)
+	g[0] = black
+	if g.legal() {
+		t.Errorf("Captured stone not recognized")
 	}
 
 }

@@ -2,7 +2,7 @@ package gogame
 
 import (
 	"bytes"
-	"fmt"
+//	"fmt"
 )
 
 
@@ -30,18 +30,15 @@ func above(xy byte) (bool, byte) {
 // findGroup finds the index of group of the expected side/color at the given coordinates.
 // If it is not found, it returns -1, nil
 func findGroup(grps []*Group, fn func(byte) (bool, byte), xy byte, side color) (bool, int, *Group) {
-	fmt.Printf("findGroup %v %v %v\n", grps, xy, side)
 	ok, xy2 := fn(xy)
 	if ok {
 		for i, gp := range grps {
 			r := bytes.IndexByte(gp.stoneCoords, xy2)
 			if gp.side == side && r >= 0 {
-				println("found", i)
 				return true, i, gp
 			}
 		}
 	}
-	println("nothing found")
 	return false, -1, nil
 }
 
