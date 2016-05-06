@@ -32,7 +32,27 @@ func TestXyAndMkMove(t *testing.T) {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
+	if g.mkmove(xy(0, 0), white)!=nil {
+		t.Errorf("Allowed illegal move at (0, 0)")
+	}
+
 	if g.mkmove(xy(1, 1), white)!=nil {
 		t.Errorf("Allowed illegal move at (1, 1)")
+	}
+
+	if g.mkmove(xy(2, 2), white)!=nil {
+		t.Errorf("Allowed illegal move at (2, 2)")
+	}
+
+	if g.finished() {
+		t.Errorf("Game finished")
+	}
+
+	g.mkmove(xy(2, 0), black)
+	g.mkmove(xy(1, 1), black)
+	g.mkmove(xy(0, 2), black)
+
+	if !g.finished() {
+		t.Errorf("Game not finished")
 	}
 }
