@@ -2,8 +2,8 @@ NeuroGo
 =======
 A neural network that can play go on very small boards
 
-TODOS
+TODOs
 -----
-  * go game angine
+  * go game engine
   * neurol network
-  * framework that integrating the two
+  * framework integrating the two
