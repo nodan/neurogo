@@ -1,8 +1,5 @@
 package gogame
 
-import "os"
-import "testing"
-
 const (
 	n = 3
 	empty = 0
@@ -38,6 +35,7 @@ func neighbors(xy int) []int {
 	return rc
 }
 
-func mkmove(g *grid, xy int, c color) {
+func (g *grid) mkmove(xy int, c color) *grid {
 	g[xy] = c
+	return g
 }
