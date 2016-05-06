@@ -14,6 +14,17 @@ func xy(x, y int) int {
 	return n*y+x
 }
 
+func invert(c color) color {
+	switch c {
+	case black:
+		return white
+	case white:
+		return black
+	default:
+		return empty
+	}
+}
+
 func neighbors(xy int) []int {
 	rc := make([]int, 0, 4)
 	if xy%n>=1 {
@@ -48,9 +59,9 @@ func (g *grid) liberties(xy int) int {
 
 func (g *grid) mkmove(xy int, c color) *grid {
 	g[xy] = c
-
+	t := g
 	for _, nxy := range neighbors(xy) {
-		if g.liberties(nxy)==0 {
+		if t[nxy]==invert(c) && t.liberties(nxy)==0 {
 			// remove captured stones
 			g[nxy] = empty
 		}
