@@ -27,7 +27,7 @@ func (p *Position) ShowPosition() string {
 		White: "White",
 		Black: "Black",
 	}
-	return m[p.turn] + " to play\n" + p.board.Show()
+	return m[p.Turn] + " to play\n" + p.Board.Show()
 }
 
 func (g *Game) ShowCurrentPosition() string {
@@ -38,10 +38,10 @@ func (g *Game) ShowGame() string {
 	result := make([]string, len(g.positions))
 	for _, p := range g.positions {
 		var mv string
-		if p.move.moveType == Pass {
+		if p.Move.MoveType == Pass {
 			mv = "passed\n"
 		} else {
-			mv = fmt.Sprintf("@%v:%v\n", p.move.x, p.move.y)
+			mv = fmt.Sprintf("@%v:%v\n", p.Move.X, p.Move.Y)
 		}
 		result = append(result, p.ShowPosition()+mv)
 	}

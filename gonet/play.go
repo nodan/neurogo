@@ -12,29 +12,8 @@ func main() {
 	// 3 layers: inputs, processing, outputs
 	n := neural.NewNetwork(9, []int{9, 81, 9})
 	n.RandomizeSynapses()
-	lastMovePass := false
 
-	g := gogame.NewGame()
-	game: for !g.Finished() {
-		c := g.Turn()
-		s := n.Calculate(g.Board().Neural(c))
-		for {
-			xy := bestMove(s)
-			if xy < 0 {
-				g.Pass()
-				if lastMovePass {
-					break game
-				}
-				lastMovePass = true
-				break
-			}
-
-			if g.Move(xy%g.Size(), xy/g.Size()) {
-				lastMovePass = false
-				break
-			}
-		}
-	}
+	g := playAiSoloGame(n)
 
 	fmt.Println(g.ShowGame())
 	fmt.Println("score", g.Board().Score())
@@ -48,6 +27,24 @@ func main() {
 	// }
 }
 
+func playAiSoloGame(n *neural.Network) *gogame.Game {
+	g := gogame.NewGame()
+	for !g.Finished() {
+		c := g.Turn()
+		s := n.Calculate(g.Board().Neural(c))
+		for {
+			xy := bestMove(s)
+			if xy < 0 {
+				g.Pass()
+				break
+			}
+			if g.Move(xy%g.Size(), xy/g.Size()) {
+				break
+			}
+		}
+	}
+	return g
+}
 
 func bestMove(s []float64) int {
 	n := gogame.Size
