@@ -5,21 +5,21 @@ import (
 	//	"fmt"
 )
 
-func TestXyAndMkMove(t *testing.T) {
-	if invert(black) != white || invert(white) != black || invert(empty) != empty {
+func TestXyAndMakeMove(t *testing.T) {
+	if Invert(Black) != White || Invert(White) != Black || Invert(Empty) != Empty {
 		t.Errorf("Failed to invert colors\n")
 	}
 
-	var g grid
-	g.mkmove(xy(1, 1), white)
-	expectedGrid := grid{empty, empty, empty, empty, white, empty, empty, empty, empty}
+	var g Grid
+	g.MakeMove(xy(1, 1), White)
+	expectedGrid := Grid{Empty, Empty, Empty, Empty, White, Empty, Empty, Empty, Empty}
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	g.mkmove(xy(0, 1), black)
-	g.mkmove(xy(1, 0), black)
-	expectedGrid = grid{empty, black, empty, black, white, empty, empty, empty, empty}
+	g.MakeMove(xy(0, 1), Black)
+	g.MakeMove(xy(1, 0), Black)
+	expectedGrid = Grid{Empty, Black, Empty, Black, White, Empty, Empty, Empty, Empty}
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
@@ -28,34 +28,34 @@ func TestXyAndMkMove(t *testing.T) {
 		t.Errorf("Expected 2 liberties, but got %d\n", l)
 	}
 
-	g.mkmove(xy(2, 1), black)
-	g.mkmove(xy(1, 2), black)
-	expectedGrid = grid{empty, black, empty, black, empty, black, empty, black, empty}
+	g.MakeMove(xy(2, 1), Black)
+	g.MakeMove(xy(1, 2), Black)
+	expectedGrid = Grid{Empty, Black, Empty, Black, Empty, Black, Empty, Black, Empty}
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	if g.mkmove(xy(0, 0), white) != nil {
+	if g.MakeMove(xy(0, 0), White) != nil {
 		t.Errorf("Allowed illegal move at (0, 0)")
 	}
 
-	if g.mkmove(xy(1, 1), white) != nil {
+	if g.MakeMove(xy(1, 1), White) != nil {
 		t.Errorf("Allowed illegal move at (1, 1)")
 	}
 
-	if g.mkmove(xy(2, 2), white) != nil {
+	if g.MakeMove(xy(2, 2), White) != nil {
 		t.Errorf("Allowed illegal move at (2, 2)")
 	}
 
-	if g.finished() {
+	if g.Finished() {
 		t.Errorf("Game finished")
 	}
 
-	g.mkmove(xy(2, 0), black)
-	g.mkmove(xy(1, 1), black)
-	g.mkmove(xy(0, 2), black)
+	g.MakeMove(xy(2, 0), Black)
+	g.MakeMove(xy(1, 1), Black)
+	g.MakeMove(xy(0, 2), Black)
 
-	if !g.finished() {
+	if !g.Finished() {
 		t.Errorf("Game not finished")
 	}
 
@@ -64,14 +64,14 @@ func TestXyAndMkMove(t *testing.T) {
 	// OOO
 	// .O.
 	// is finished
-	g = grid{}
+	g = Grid{}
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 2; y++ {
-			g.mkmove(xy(x, y), white)
+			g.MakeMove(xy(x, y), White)
 		}
 	}
-	g.mkmove(xy(1, 2), white)
-	if !g.finished() {
+	g.MakeMove(xy(1, 2), White)
+	if !g.Finished() {
 		t.Errorf("Game not finished")
 	}
 
@@ -80,41 +80,41 @@ func TestXyAndMkMove(t *testing.T) {
 	// OOO
 	// OO.
 	// is not finished
-	g = grid{}
+	g = Grid{}
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 3; y++ {
-			g.mkmove(xy(x, y), white)
+			g.MakeMove(xy(x, y), White)
 		}
 	}
-	g.mkmove(xy(2, 2), empty)
-	if g.finished() {
+	g.MakeMove(xy(2, 2), Empty)
+	if g.Finished() {
 		t.Errorf("Game not finished")
 	}
 
-	g = grid{}
-	if !g.legal() {
+	g = Grid{}
+	if !g.Legal() {
 		t.Errorf("Empty board not legal")
 	}
 
-	g = grid{}
+	g = Grid{}
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 3; y++ {
-			g.mkmove(xy(x, y), white)
+			g.MakeMove(xy(x, y), White)
 		}
 	}
-	if !g.legal() {
+	if !g.Legal() {
 		t.Errorf("Almost full board not legal")
 	}
 
-	g[8] = white
-	if g.legal() {
+	g[8] = White
+	if g.Legal() {
 		t.Errorf("Full board legal")
 	}
 
-	g = grid{}
-	g.mkmove(xy(1, 0), white).mkmove(xy(0, 1), white)
-	g[0] = black
-	if g.legal() {
+	g = Grid{}
+	g.MakeMove(xy(1, 0), White).MakeMove(xy(0, 1), White)
+	g[0] = Black
+	if g.Legal() {
 		t.Errorf("Captured stone not recognized")
 	}
 

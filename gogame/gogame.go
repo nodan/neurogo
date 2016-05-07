@@ -190,7 +190,7 @@ func (g *Grid) Finished() bool {
 	return true
 }
 
-func (g *Grid) legal() bool {
+func (g *Grid) Legal() bool {
 	for xy := 0; xy < n*n; xy++ {
 		println(xy, g[xy], g.liberties(xy, 1))
 		if g[xy] != Empty && g.liberties(xy, 1) == 0 {
