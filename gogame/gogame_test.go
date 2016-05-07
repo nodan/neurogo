@@ -11,39 +11,39 @@ func TestXyAndMakeMove(t *testing.T) {
 	}
 
 	var g Grid
-	g.MakeMove(xy(1, 1), White)
+	g.MakeMove(Xy(1, 1), White)
 	expectedGrid := Grid{Empty, Empty, Empty, Empty, White, Empty, Empty, Empty, Empty}
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	g.MakeMove(xy(0, 1), Black)
-	g.MakeMove(xy(1, 0), Black)
+	g.MakeMove(Xy(0, 1), Black)
+	g.MakeMove(Xy(1, 0), Black)
 	expectedGrid = Grid{Empty, Black, Empty, Black, White, Empty, Empty, Empty, Empty}
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	if l := g.liberties(xy(1, 1), 4); l != 2 {
+	if l := g.liberties(Xy(1, 1), 4); l != 2 {
 		t.Errorf("Expected 2 liberties, but got %d\n", l)
 	}
 
-	g.MakeMove(xy(2, 1), Black)
-	g.MakeMove(xy(1, 2), Black)
+	g.MakeMove(Xy(2, 1), Black)
+	g.MakeMove(Xy(1, 2), Black)
 	expectedGrid = Grid{Empty, Black, Empty, Black, Empty, Black, Empty, Black, Empty}
 	if g != expectedGrid {
 		t.Errorf("Expected %v, but got %v\n", expectedGrid, g)
 	}
 
-	if g.MakeMove(xy(0, 0), White) != nil {
+	if g.MakeMove(Xy(0, 0), White) != nil {
 		t.Errorf("Allowed illegal move at (0, 0)")
 	}
 
-	if g.MakeMove(xy(1, 1), White) != nil {
+	if g.MakeMove(Xy(1, 1), White) != nil {
 		t.Errorf("Allowed illegal move at (1, 1)")
 	}
 
-	if g.MakeMove(xy(2, 2), White) != nil {
+	if g.MakeMove(Xy(2, 2), White) != nil {
 		t.Errorf("Allowed illegal move at (2, 2)")
 	}
 
@@ -51,9 +51,9 @@ func TestXyAndMakeMove(t *testing.T) {
 		t.Errorf("Game finished")
 	}
 
-	g.MakeMove(xy(2, 0), Black)
-	g.MakeMove(xy(1, 1), Black)
-	g.MakeMove(xy(0, 2), Black)
+	g.MakeMove(Xy(2, 0), Black)
+	g.MakeMove(Xy(1, 1), Black)
+	g.MakeMove(Xy(0, 2), Black)
 
 	if !g.Finished() {
 		t.Errorf("Game not finished")
@@ -67,10 +67,10 @@ func TestXyAndMakeMove(t *testing.T) {
 	g = Grid{}
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 2; y++ {
-			g.MakeMove(xy(x, y), White)
+			g.MakeMove(Xy(x, y), White)
 		}
 	}
-	g.MakeMove(xy(1, 2), White)
+	g.MakeMove(Xy(1, 2), White)
 	if !g.Finished() {
 		t.Errorf("Game not finished")
 	}
@@ -83,10 +83,10 @@ func TestXyAndMakeMove(t *testing.T) {
 	g = Grid{}
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 3; y++ {
-			g.MakeMove(xy(x, y), White)
+			g.MakeMove(Xy(x, y), White)
 		}
 	}
-	g.MakeMove(xy(2, 2), Empty)
+	g.MakeMove(Xy(2, 2), Empty)
 	if g.Finished() {
 		t.Errorf("Game not finished")
 	}
@@ -99,7 +99,7 @@ func TestXyAndMakeMove(t *testing.T) {
 	g = Grid{}
 	for x := 0; x < 3; x++ {
 		for y := 0; y < 3; y++ {
-			g.MakeMove(xy(x, y), White)
+			g.MakeMove(Xy(x, y), White)
 		}
 	}
 	if !g.Legal() {
@@ -112,7 +112,7 @@ func TestXyAndMakeMove(t *testing.T) {
 	}
 
 	g = Grid{}
-	g.MakeMove(xy(1, 0), White).MakeMove(xy(0, 1), White)
+	g.MakeMove(Xy(1, 0), White).MakeMove(Xy(0, 1), White)
 	g[0] = Black
 	if g.Legal() {
 		t.Errorf("Captured stone not recognized")

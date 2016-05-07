@@ -3,6 +3,7 @@ package gogame
 const (
 	// board size
 	n = 3
+	Size = n
 
 	// Colors
 	Empty = 0
@@ -16,7 +17,7 @@ type Color byte
 type Grid [n * n]Color
 
 // transform a board coordinate into a linear array index
-func xy(x, y int) int {
+func Xy(x, y int) int {
 	return n*y + x
 }
 
@@ -152,6 +153,7 @@ func (g *Grid) MakeMove(xy int, c Color) *Grid {
 
 	return g
 }
+
 
 // check if the game is finished in the sense of there not being to adjacent Empty points and
 // every group having exactly two liberties
