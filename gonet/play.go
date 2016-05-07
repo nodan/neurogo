@@ -13,13 +13,24 @@ func main() {
 	n := neural.NewNetwork(9, []int{9, 81, 9})
 	n.RandomizeSynapses()
 
-	for i:=0; i<1000; i++ {
+	grid := &gogame.Grid{}
+	b := grid.Neural(gogame.Black)
+	s := append(b, 1)[0:9]
+	s[4] = 1
+	for i := 0; i < 1000; i++ {
+		learn.Learn(n, b, s, 1)
+	}
+
+	for i:=0; i < 1000; i++ {
 		g := playAiSoloGame(n)
 		learnFrom(g, n)
 
-		fmt.Println(g.ShowGame())
-		fmt.Println("score", g.Board().Score())
+		// fmt.Println(g.ShowGame())
+		// fmt.Println("score", g.Board().Score())
 	}
+	g := playAiSoloGame(n)
+	fmt.Println(g.ShowGame())
+	fmt.Printf("Score %v after %v moves\n", g.Board().Score(), len(g.Positions()))
 }
 
 func playAiSoloGame(n *neural.Network) *gogame.Game {
@@ -59,7 +70,7 @@ func bestMove(s []float64) int {
 
 func learnFrom(g *gogame.Game, n *neural.Network) {
 	pn := g.Positions()
-	score := g.Score()-8
+	score := g.Score()
 	if score == 0 {
 		return
 	}
@@ -71,11 +82,12 @@ func learnFrom(g *gogame.Game, n *neural.Network) {
 	}
 
 	l := len(pn)
-	if l>20 {
-		l -= 20
-	} else {
-		l = 0
-	}
+	// if l > 6 {
+	//	l -= 6
+	// } else {
+	//	l = 0
+	// }
+	l = 0
 
 	for _, p := range pn[l:] {
 		c := g.Turn()
@@ -83,23 +95,26 @@ func learnFrom(g *gogame.Game, n *neural.Network) {
 		s := n.Calculate(b)
 		if c==lost && p.Move.MoveType!=gogame.Pass {
 			demote(s, gogame.Xy(p.Move.X, p.Move.Y))
+			learn.Learn(n, b, s, 0.2)
+		} else if c != lost && p.Move.MoveType!=gogame.Pass {
+			s[gogame.Xy(p.Move.X, p.Move.Y)] = 1
 			learn.Learn(n, b, s, 0.1)
 		}
 	}
 }
 
 func demote(s []float64, xy int) {
-	n := gogame.Size
+	//n := gogame.Size
 	// find the next best move
-	nb := -1
-	for nxy := 0; nxy < n*n; nxy++ {
-		if s[nxy]>=0 && (nb<0 || s[nxy]>s[nb]) && s[nxy]<s[xy] {
-			nb = nxy
-		}
-	}
+	nb := 1
+	// for nxy := 0; nxy < n*n; nxy++ {
+	//	if s[nxy]>=0 && (nb<0 || s[nxy]>s[nb]) && s[nxy]<s[xy] {
+	//		nb = nxy
+	//	}
+	// }
 
 	if nb>=0 {
 		// demote xy
-		s[xy] = s[nb]*0.9
+		s[xy] = 0 // s[nb]*0.9
 	}
 }
