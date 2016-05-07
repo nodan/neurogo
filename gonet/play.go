@@ -31,6 +31,7 @@ func main() {
 				break
 			}
 		}
+
 		fmt.Println(g)
 		c = gogame.Invert(c)
 	}
