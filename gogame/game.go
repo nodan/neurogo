@@ -20,16 +20,16 @@ const (
 type MoveType byte
 
 type Move struct {
-	moveType MoveType
-	x, y     int
+	MoveType MoveType
+	X, Y     int
 }
 
 var emptyMove = Move{Pass, -1, -1}
 
 type Position struct {
-	turn  Color
-	board Grid
-	move  Move
+	Turn  Color
+	Board Grid
+	Move  Move
 }
 
 type Game struct {
@@ -50,7 +50,12 @@ func (g *Game) CurrentPosition() *Position {
 }
 
 func (g *Game) Finished() bool {
-	return g.CurrentPosition().board.Finished()
+	return g.twoConsecutivePasses() || g.CurrentPosition().Board.Finished()
+}
+
+func (g *Game) twoConsecutivePasses() bool {
+	n := len(g.positions)
+	return n > 2 && g.positions[n-2].Move.MoveType == Pass && g.positions[n-3].Move.MoveType == Pass
 }
 
 func (g *Game) Size() int {
@@ -58,33 +63,33 @@ func (g *Game) Size() int {
 }
 
 func (g *Game) Turn() Color {
-	return g.CurrentPosition().turn
+	return g.CurrentPosition().Turn
 }
 
 func (g *Game) Board() *Grid {
-	return &g.CurrentPosition().board
+	return &g.CurrentPosition().Board
 }
 
 func (g *Game) Move(x,y int) bool {
 	player := g.Turn()
 	cpos := g.CurrentPosition()
-	grid := cpos.board
+	grid := cpos.Board
 	if grid.MakeMove(Xy(x, y), player) == nil {
 		return false
 	}
 	pos := Position{ Invert(player), grid, emptyMove }
 	for _, p := range g.positions {
-		if p.turn == pos.turn && reflect.DeepEqual(p.board, pos.board) {
+		if p.Turn == pos.Turn && reflect.DeepEqual(p.Board, pos.Board) {
 			return false
 		}
 	}
-	cpos.move = Move{Stone, x, y}
+	cpos.Move = Move{Stone, x, y}
 	g.positions = append(g.positions, pos)
 	return true
 }
 
 func (g *Game) Pass() {
 	p := g.CurrentPosition()
-	p.move = Move{Pass, 0, 0}
-	g.positions = append(g.positions, Position{ Invert(p.turn), p.board, emptyMove})
+	p.Move = Move{Pass, 0, 0}
+	g.positions = append(g.positions, Position{ Invert(p.Turn), p.Board, emptyMove})
 }
