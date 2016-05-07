@@ -119,3 +119,30 @@ func TestXyAndMakeMove(t *testing.T) {
 	}
 
 }
+
+func TestCountEmptyBoard(t *testing.T) {
+	g := Grid{}
+	if g.Score() != 0 {
+		t.Errorf("Empty board has score %v", g.Score())
+	}
+}
+
+func TestCountTengen(t *testing.T) {
+	g := Grid{}
+	g.MakeMove(Xy(1, 1), Black)
+	if g.Score() != 5 {
+		t.Errorf("Board has score %v", g.Score())
+	}
+}
+
+func TestCountBoard(t *testing.T) {
+	g := Grid{}
+	g.MakeMove(Xy(1, 1), Black).
+		MakeMove(Xy(2, 1), Black).
+		MakeMove(Xy(1, 2), Black).
+		MakeMove(Xy(0, 1), White).
+		MakeMove(Xy(1, 0), White)
+	if g.Score() != 1 {
+		t.Errorf("Board has score %v", g.Score())
+	}
+}

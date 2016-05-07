@@ -201,32 +201,23 @@ func (g *Grid) Score() int {
 		case White:
 			score--;
 		case Empty:
-			s := 0
-			for i, nxy := range neighbors(xy) {
+			bn := false
+			wn := false
+			for _, nxy := range neighbors(xy) {
 				switch g[nxy] {
 				case Black:
-					if i==0 {
-						s = 1
-					} else {
-						if s!=1 {
-							s = 0
-						}
-					}
+					bn = true
 				case White:
-					if i==0 {
-						s = -1
-					} else {
-						if s!=-1 {
-							s = 0
-						}
-					}
+					wn = true
 				}
 			}
-
-			score += s
+			if (bn && !wn) {
+				score++
+			} else if (!bn && wn) {
+				score--
+			}
 		}
 	}
-
 	return score
 }
 
