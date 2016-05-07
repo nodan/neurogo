@@ -34,3 +34,16 @@ func TestLegalMoves(t *testing.T) {
 		t.Errorf("5 positions expected but got %d", len(g.positions))
 	}
 }
+
+func TestSuperKo(t *testing.T) {
+	g := NewGame()
+	g.Move(1, 1)
+	g.Move(1, 0)
+	g.Move(0, 2)
+	g.Move(0, 1)
+	g.Move(0, 0)
+	if g.Move(0, 1) {
+		t.Errorf("Ko not recognized")
+	}
+	println(g.ShowAllPositions())
+}

@@ -26,12 +26,12 @@ func NewGame() *Game {
 	return &Game{ps}
 }
 
-func (g *Game) currentPosition() *Position {
+func (g *Game) CurrentPosition() *Position {
 	return &g.positions[len(g.positions)-1]
 }
 
 func (g *Game) Finished() bool {
-	return g.currentPosition().board.Finished()
+	return g.CurrentPosition().board.Finished()
 }
 
 func (g *Game) Size() int {
@@ -39,12 +39,12 @@ func (g *Game) Size() int {
 }
 
 func (g *Game) Turn() Color {
-	return g.currentPosition().turn
+	return g.CurrentPosition().turn
 }
 
 func (g *Game) Move(x,y int) bool {
 	player := g.Turn()
-	grid := g.currentPosition().board
+	grid := g.CurrentPosition().board
 	if grid.MakeMove(Xy(x, y), player) == nil {
 		return false
 	}
