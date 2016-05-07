@@ -46,7 +46,7 @@ func TestSuperKo(t *testing.T) {
 	if g.Move(0, 1) {
 		t.Errorf("Ko not recognized")
 	}
-	println(g.ShowAllPositions())
+	println(g.ShowGame())
 }
 
 func TestPass(t *testing.T) {
@@ -62,7 +62,7 @@ func ExampleBlackMovesTwice() {
 	g.Move(1, 1)
 	g.Pass()
 	g.Move(2, 1)
-	fmt.Println(g.ShowAllPositions())
+	fmt.Println(g.ShowGame())
 	// Output:
 	// Black to play
 	// ...

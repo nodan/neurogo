@@ -30,5 +30,5 @@ func main() {
 		}
 	}
 
-	fmt.Println(g.ShowAllPositions())
+	fmt.Println(g.ShowGame())
 }

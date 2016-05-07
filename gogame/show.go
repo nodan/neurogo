@@ -34,7 +34,7 @@ func (g *Game) ShowCurrentPosition() string {
 	return g.CurrentPosition().ShowPosition()
 }
 
-func (g *Game) ShowAllPositions() string {
+func (g *Game) ShowGame() string {
 	result := make([]string, len(g.positions))
 	for _, p := range g.positions {
 		var mv string
