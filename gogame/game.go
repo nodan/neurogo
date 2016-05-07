@@ -26,6 +26,10 @@ func NewGame() *Game {
 	return &Game{ps}
 }
 
+func (g *Game) Positions() []Position {
+	return g.positions;
+}
+
 func (g *Game) CurrentPosition() *Position {
 	return &g.positions[len(g.positions)-1]
 }
