@@ -57,3 +57,8 @@ func (g *Game) Move(x,y int) bool {
 	g.positions = append(g.positions, pos)
 	return true
 }
+
+func (g *Game) Pass() {
+	p := g.CurrentPosition()
+	g.positions = append(g.positions, Position{ Invert(p.turn), p.board })
+}

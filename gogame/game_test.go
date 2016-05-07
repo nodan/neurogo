@@ -2,6 +2,7 @@ package gogame
 
 import (
 	"testing"
+	"fmt"
 )
 
 func TestNewGameNotFinished(t *testing.T) {
@@ -46,4 +47,40 @@ func TestSuperKo(t *testing.T) {
 		t.Errorf("Ko not recognized")
 	}
 	println(g.ShowAllPositions())
+}
+
+func TestPass(t *testing.T) {
+	g := NewGame()
+	g.Pass()
+	if g.Turn() != White {
+		t.Errorf("Not white's turn, but %v", g.Turn())
+	}
+}
+
+func ExampleBlackMovesTwice() {
+	g := NewGame()
+	g.Move(1, 1)
+	g.Pass()
+	g.Move(2, 1)
+	fmt.Println(g.ShowAllPositions())
+	// Output:
+	// Black to play
+	// ...
+	// ...
+	// ...
+	//
+	// White to play
+	// ...
+	// .X.
+	// ...
+	//
+	// Black to play
+	// ...
+	// .X.
+	// ...
+	//
+	// White to play
+	// ...
+	// .XX
+	// ...
 }
