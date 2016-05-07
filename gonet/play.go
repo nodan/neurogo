@@ -31,12 +31,13 @@ func main() {
 	}
 
 	fmt.Println(g.ShowGame())
+	fmt.Println("score", g.Board().Score())
 
-	for _, p := g.Positions() {
-		c := g.Turn()
-		b := g.Board().Neural(c)
-		s := n.Calculate(b)
-		gogame.Demote(s, p.Played())
-		learn.Learn(n, b, s, 0.1)
-	}
+	// for _, p := g.Positions() {
+	// 	c := g.Turn()
+	// 	b := g.Board().Neural(c)
+	// 	s := n.Calculate(b)
+	// 	gogame.Demote(s, p.Played())
+	// 	learn.Learn(n, b, s, 0.1)
+	// }
 }

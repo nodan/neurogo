@@ -155,7 +155,7 @@ func (g *Grid) MakeMove(xy int, c Color) *Grid {
 }
 
 
-// check if the game is finished in the sense of there not being to adjacent Empty points and
+// check if the game is finished in the sense of there not being two adjacent Empty points and
 // every group having exactly two liberties
 func (g *Grid) Finished() bool {
 	var c Grid
@@ -190,6 +190,44 @@ func (g *Grid) Finished() bool {
 	}
 
 	return true
+}
+
+func (g *Grid) Score() int {
+	score := 0
+	for xy := 0; xy < n*n; xy++ {
+		switch g[xy] {
+		case Black:
+			score++;
+		case White:
+			score--;
+		case Empty:
+			s := 0
+			for i, nxy := range neighbors(xy) {
+				switch g[nxy] {
+				case Black:
+					if i==0 {
+						s = 1
+					} else {
+						if s!=1 {
+							s = 0
+						}
+					}
+				case White:
+					if i==0 {
+						s = -1
+					} else {
+						if s!=-1 {
+							s = 0
+						}
+					}
+				}
+			}
+
+			score += s
+		}
+	}
+
+	return score
 }
 
 func (g *Grid) Legal() bool {
