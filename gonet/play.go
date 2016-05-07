@@ -18,7 +18,7 @@ func main() {
 		c := g.Turn()
 		s := n.Calculate(g.Board().Neural(c))
 		for {
-			xy := g.Board().BestMove(s)
+			xy := gogame.BestMove(s)
 			if xy<0 {
 				g.Pass()
 				break

@@ -218,10 +218,10 @@ func (g* Grid) Neural(c Color) []float64 {
 	return rc
 }
 
-func (g* Grid) BestMove(s []float64) int {
+func BestMove(s []float64) int {
 	rc := -1
 	for xy := 0; xy < n*n; xy++ {
-		if g[xy]==Empty && s[xy]>=0 && (rc<0 || s[xy]>s[rc]) {
+		if s[xy]>=0 && (rc<0 || s[xy]>s[rc]) {
 			rc = xy
 		}
 	}
