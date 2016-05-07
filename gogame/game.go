@@ -12,9 +12,24 @@ const (
 
 type IllegalMoveReason byte
 
+const (
+	Pass = 0
+	Stone = 1
+)
+
+type MoveType byte
+
+type Move struct {
+	moveType MoveType
+	x, y     int
+}
+
+var emptyMove = Move{Pass, -1, -1}
+
 type Position struct {
 	turn  Color
 	board Grid
+	move  Move
 }
 
 type Game struct {
@@ -22,7 +37,7 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	ps := []Position{{Black, Grid{}}}
+	ps := []Position{{Black, Grid{}, emptyMove}}
 	return &Game{ps}
 }
 
@@ -52,21 +67,24 @@ func (g *Game) Board() *Grid {
 
 func (g *Game) Move(x,y int) bool {
 	player := g.Turn()
-	grid := g.CurrentPosition().board
+	cpos := g.CurrentPosition()
+	grid := cpos.board
 	if grid.MakeMove(Xy(x, y), player) == nil {
 		return false
 	}
-	pos := Position{ Invert(player), grid }
+	pos := Position{ Invert(player), grid, emptyMove }
 	for _, p := range g.positions {
-		if	reflect.DeepEqual(p, pos) {
+		if p.turn == pos.turn && reflect.DeepEqual(p.board, pos.board) {
 			return false
 		}
 	}
+	cpos.move = Move{Stone, x, y}
 	g.positions = append(g.positions, pos)
 	return true
 }
 
 func (g *Game) Pass() {
 	p := g.CurrentPosition()
-	g.positions = append(g.positions, Position{ Invert(p.turn), p.board })
+	p.move = Move{Pass, 0, 0}
+	g.positions = append(g.positions, Position{ Invert(p.turn), p.board, emptyMove})
 }

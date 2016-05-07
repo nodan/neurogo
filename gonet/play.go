@@ -30,7 +30,7 @@ func main() {
 		}
 	}
 
-	fmt.Println(g.ShowAllPositions())
+	fmt.Println(g.ShowGame())
 
 	for _, p := g.Positions() {
 		c := g.Turn()
