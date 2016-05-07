@@ -39,7 +39,8 @@ func main() {
 	fmt.Println(g.ShowGame())
 	fmt.Println("score", g.Board().Score())
 
-	// for _, p := g.Positions() {
+	// pn := g.Positions()
+	// for _, p := range pn[len(pn)-10:] {
 	//	c := g.Turn()
 	//	b := g.Board().Neural(c)
 	//	s := n.Calculate(b)
