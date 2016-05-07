@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"neurogo/gogame"
 	"github.com/NOX73/go-neural"
-//	"github.com/NOX73/go-neural/learn"
+	"github.com/NOX73/go-neural/learn"
 //	"github.com/NOX73/go-neural/persist"
 )
 
@@ -13,12 +13,13 @@ func main() {
 	n := neural.NewNetwork(9, []int{9, 81, 9})
 	n.RandomizeSynapses()
 
-	g := playAiSoloGame(n)
-	learnFrom(g, n)
+	for i:=0; i<1000; i++ {
+		g := playAiSoloGame(n)
+		learnFrom(g, n)
 
-	fmt.Println(g.ShowGame())
-	fmt.Println("score", g.Board().Score())
-
+		fmt.Println(g.ShowGame())
+		fmt.Println("score", g.Board().Score())
+	}
 }
 
 func playAiSoloGame(n *neural.Network) *gogame.Game {
@@ -58,19 +59,33 @@ func bestMove(s []float64) int {
 
 func learnFrom(g *gogame.Game, n *neural.Network) {
 	pn := g.Positions()
-	score := g.Score()
+	score := g.Score()-8
 	if score == 0 {
 		return
 	}
 
-	// for _, p := range pn[len(pn)-10:] {
-	//	c := g.Turn()
-	//	b := g.Board().Neural(c)
-	//	s := n.Calculate(b)
-	//	demote(s, p.Played())
-	//	learn.Learn(n, b, s, 0.1)
-	// }
+	var lost gogame.Color
+	lost = gogame.Black
+	if score>0 {
+		lost = gogame.White
+	}
 
+	l := len(pn)
+	if l>20 {
+		l -= 20
+	} else {
+		l = 0
+	}
+
+	for _, p := range pn[l:] {
+		c := g.Turn()
+		b := g.Board().Neural(c)
+		s := n.Calculate(b)
+		if c==lost && p.Move.MoveType!=gogame.Pass {
+			demote(s, gogame.Xy(p.Move.X, p.Move.Y))
+			learn.Learn(n, b, s, 0.1)
+		}
+	}
 }
 
 func demote(s []float64, xy int) {
