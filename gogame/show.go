@@ -3,6 +3,7 @@ package gogame
 import (
 	"bytes"
 	"strings"
+	"fmt"
 )
 
 func (g *Grid) Show() string {
@@ -36,7 +37,13 @@ func (g *Game) ShowCurrentPosition() string {
 func (g *Game) ShowAllPositions() string {
 	result := make([]string, len(g.positions))
 	for _, p := range g.positions {
-		result = append(result, p.ShowPosition())
+		var mv string
+		if p.move.moveType == Pass {
+			mv = "passed\n"
+		} else {
+			mv = fmt.Sprintf("@%v:%v\n", p.move.x, p.move.y)
+		}
+		result = append(result, p.ShowPosition()+mv)
 	}
 	return strings.Join(result, "\n")
 }
