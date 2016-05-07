@@ -70,6 +70,10 @@ func (g *Game) Board() *Grid {
 	return &g.CurrentPosition().Board
 }
 
+func (g *Game) Score() int {
+	return g.CurrentPosition().Board.Score()
+}
+
 func (g *Game) Move(x,y int) bool {
 	player := g.Turn()
 	cpos := g.CurrentPosition()

@@ -14,18 +14,11 @@ func main() {
 	n.RandomizeSynapses()
 
 	g := playAiSoloGame(n)
+	learnFrom(g, n)
 
 	fmt.Println(g.ShowGame())
 	fmt.Println("score", g.Board().Score())
 
-	// pn := g.Positions()
-	// for _, p := range pn[len(pn)-10:] {
-	//	c := g.Turn()
-	//	b := g.Board().Neural(c)
-	//	s := n.Calculate(b)
-	//	demote(s, p.Played())
-	//	learn.Learn(n, b, s, 0.1)
-	// }
 }
 
 func playAiSoloGame(n *neural.Network) *gogame.Game {
@@ -61,6 +54,23 @@ func bestMove(s []float64) int {
 		s[rc] = -1
 	}
 	return rc
+}
+
+func learnFrom(g *gogame.Game, n *neural.Network) {
+	pn := g.Positions()
+	score := g.Score()
+	if score == 0 {
+		return
+	}
+
+	// for _, p := range pn[len(pn)-10:] {
+	//	c := g.Turn()
+	//	b := g.Board().Neural(c)
+	//	s := n.Calculate(b)
+	//	demote(s, p.Played())
+	//	learn.Learn(n, b, s, 0.1)
+	// }
+
 }
 
 func demote(s []float64, xy int) {
