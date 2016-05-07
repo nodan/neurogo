@@ -19,9 +19,17 @@ func main() {
 	for !g.Finished() {
 		s := n.Calculate(g.Neural(c))
 		fmt.Println(s)
-		if g.MakeMove(g.BestMove(s), c)==nil {
-			fmt.Println("illegal move")
-			break
+		for {
+			xy := g.BestMove(s)
+			if xy<0 {
+				fmt.Println("pass", c)
+				break
+			}
+
+			fmt.Println("best move", xy, c)
+			if g.MakeMove(xy, c)!=nil {
+				break
+			}
 		}
 		fmt.Println(g)
 		c = gogame.Invert(c)
