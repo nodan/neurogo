@@ -13,26 +13,22 @@ func main() {
 	n := neural.NewNetwork(9, []int{9, 81, 9})
 	n.RandomizeSynapses()
 
-	var g gogame.Grid
-	var c gogame.Color
-	c = gogame.Black
+	g := gogame.NewGame()
 	for !g.Finished() {
-		s := n.Calculate(g.Neural(c))
-		fmt.Println(s)
+		c := g.Turn()
+		s := n.Calculate(g.Board().Neural(c))
 		for {
-			xy := g.BestMove(s)
+			xy := g.Board().BestMove(s)
 			if xy<0 {
-				fmt.Println("pass", c)
+				g.Pass()
 				break
 			}
 
-			fmt.Println("best move", xy, c)
-			if g.MakeMove(xy, c)!=nil {
+			if g.Move(xy%g.Size(), xy/g.Size()) {
 				break
 			}
 		}
-
-		fmt.Println(g)
-		c = gogame.Invert(c)
 	}
+
+	fmt.Println(g.ShowAllPositions())
 }

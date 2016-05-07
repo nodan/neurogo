@@ -42,6 +42,10 @@ func (g *Game) Turn() Color {
 	return g.CurrentPosition().turn
 }
 
+func (g *Game) Board() *Grid {
+	return &g.CurrentPosition().board
+}
+
 func (g *Game) Move(x,y int) bool {
 	player := g.Turn()
 	grid := g.CurrentPosition().board
