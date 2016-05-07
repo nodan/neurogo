@@ -252,36 +252,5 @@ func (g* Grid) Neural(c Color) []float64 {
 			rc[xy] = 0.0
 		}
 	}
-
 	return rc
-}
-
-func BestMove(s []float64) int {
-	rc := -1
-	for xy := 0; xy < n*n; xy++ {
-		if s[xy]>=0 && (rc<0 || s[xy]>s[rc]) {
-			rc = xy
-		}
-	}
-
-	if rc>=0 {
-		s[rc] = -1
-	}
-
-	return rc
-}
-
-func Demote(s []float64, xy int) {
-	// find the next best move
-	nb := -1
-	for nxy := 0; nxy < n*n; nxy++ {
-		if s[nxy]>=0 && (nb<0 || s[nxy]>s[nb]) && s[nxy]<s[xy] {
-			nb = nxy
-		}
-	}
-
-	if nb>=0 {
-		// demote xy
-		s[xy] = s[nb]*0.9
-	}
 }
