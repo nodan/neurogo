@@ -6,7 +6,7 @@ import (
 )
 
 type Group struct {
-	side        color
+	side        Color
 	stoneCoords []byte
 }
 
@@ -26,9 +26,9 @@ func above(xy byte) (bool, byte) {
 	}
 }
 
-// findGroup finds the index of group of the expected side/color at the given coordinates.
+// findGroup finds the index of group of the expected side/Color at the given coordinates.
 // If it is not found, it returns -1, nil
-func findGroup(grps []*Group, fn func(byte) (bool, byte), xy byte, side color) (bool, int, *Group) {
+func findGroup(grps []*Group, fn func(byte) (bool, byte), xy byte, side Color) (bool, int, *Group) {
 	ok, xy2 := fn(xy)
 	if ok {
 		for i, gp := range grps {
@@ -51,11 +51,11 @@ func firstNonNil(gs ...*Group) *Group {
 }
 
 // categorizeGroups finds all groups
-func (g *grid) categorizeGroups() []*Group {
+func (g *Grid) categorizeGroups() []*Group {
 	grps := make([]*Group, 0)
 	var i byte
 	for i = 0; i < n*n; i++ {
-		if g[i] == empty {
+		if g[i] == Empty {
 			continue
 		}
 		lok, _, lgp := findGroup(grps, leftOf, i, g[i])

@@ -4,31 +4,31 @@ const (
 	// board size
 	n = 3
 
-	// colors
-	empty = 0
-	black = 1
-	white = 2
+	// Colors
+	Empty = 0
+	Black = 1
+	White = 2
 )
 
-type color byte
+type Color byte
 
 // the board
-type grid [n * n]color
+type Grid [n * n]Color
 
 // transform a board coordinate into a linear array index
 func xy(x, y int) int {
 	return n*y + x
 }
 
-// invert a color black<->white
-func invert(c color) color {
+// Invert a Color Black<->White
+func Invert(c Color) Color {
 	switch c {
-	case black:
-		return white
-	case white:
-		return black
+	case Black:
+		return White
+	case White:
+		return Black
 	default:
-		return empty
+		return Empty
 	}
 }
 
@@ -55,16 +55,16 @@ func neighbors(xy int) []int {
 }
 
 // find up to max liberties of a chain
-func (g *grid) findLiberties(xy int, max int) int {
+func (g *Grid) findLiberties(xy int, max int) int {
 	libs := 0
 	c := g[xy]
-	opposite := invert(c)
+	opposite := Invert(c)
 	g[xy] = opposite // don't look here again
 
 	// look at the neighbors
 	for _, nxy := range neighbors(xy) {
 		switch g[nxy] {
-		case empty:
+		case Empty:
 			// count liberty
 			libs += 1
 			g[nxy] = opposite // don't look here again
@@ -89,15 +89,15 @@ func (g *grid) findLiberties(xy int, max int) int {
 }
 
 // find up to max liberties of a chain
-func (g *grid) liberties(xy int, max int) int {
+func (g *Grid) liberties(xy int, max int) int {
 	t := *g
 	return t.findLiberties(xy, max)
 }
 
 // remove a chain of stones
-func (g *grid) remove(xy int) *grid {
+func (g *Grid) remove(xy int) *Grid {
 	c := g[xy]
-	g[xy] = empty
+	g[xy] = Empty
 	for _, nxy := range neighbors(xy) {
 		if g[nxy] == c {
 			g.remove(nxy)
@@ -108,9 +108,9 @@ func (g *grid) remove(xy int) *grid {
 }
 
 // count liberties of a chain of stones
-func (counter *grid) count(xy int, g *grid) *grid {
-	if c := g[xy]; c != empty {
-		g[xy] = empty
+func (counter *Grid) count(xy int, g *Grid) *Grid {
+	if c := g[xy]; c != Empty {
+		g[xy] = Empty
 		counter[xy]++
 		for _, nxy := range neighbors(xy) {
 			if g[nxy] == c {
@@ -122,9 +122,9 @@ func (counter *grid) count(xy int, g *grid) *grid {
 }
 
 // play a move
-func (g *grid) mkmove(xy int, c color) *grid {
-	if g[xy] != empty {
-		// don't play on non-empty points
+func (g *Grid) MakeMove(xy int, c Color) *Grid {
+	if g[xy] != Empty {
+		// don't play on non-Empty points
 		return nil
 	}
 
@@ -134,7 +134,7 @@ func (g *grid) mkmove(xy int, c color) *grid {
 	// check neighbors
 	for _, nxy := range neighbors(xy) {
 		t := *g
-		if t[nxy] == invert(c) && t.findLiberties(nxy, 1) == 0 {
+		if t[nxy] == Invert(c) && t.findLiberties(nxy, 1) == 0 {
 			// remove captured stones
 			g.remove(nxy)
 		}
@@ -144,7 +144,7 @@ func (g *grid) mkmove(xy int, c color) *grid {
 	t := *g
 	if t.findLiberties(xy, 1) == 0 {
 		// undo the move
-		g[xy] = empty
+		g[xy] = Empty
 
 		// illegal move, no liberties
 		return nil
@@ -153,18 +153,18 @@ func (g *grid) mkmove(xy int, c color) *grid {
 	return g
 }
 
-// check if the game is finished in the sense of there not being to adjacent empty points and
+// check if the game is finished in the sense of there not being to adjacent Empty points and
 // every group having exactly two liberties
-func (g *grid) finished() bool {
-	var c grid
+func (g *Grid) Finished() bool {
+	var c Grid
 	for xy := 0; xy < n*n; xy++ {
-		// find empty points
-		if g[xy] == empty {
+		// find Empty points
+		if g[xy] == Empty {
 			t := *g
 			nl := neighbors(xy)
 			for _, nxy := range nl {
-				// same color for all adjacent points
-				if g[nxy] == empty || g[nxy] != g[nl[0]] {
+				// same Color for all adjacent points
+				if g[nxy] == Empty || g[nxy] != g[nl[0]] {
 					return false
 				}
 			}
@@ -179,10 +179,10 @@ func (g *grid) finished() bool {
 		}
 	}
 
-	// find non-empty points
+	// find non-Empty points
 	for xy := 0; xy < n*n; xy++ {
 		// all chains must have 2 liberties
-		if g[xy] != empty && c[xy] != 2 {
+		if g[xy] != Empty && c[xy] != 2 {
 			return false
 		}
 	}
@@ -190,12 +190,39 @@ func (g *grid) finished() bool {
 	return true
 }
 
-func (g *grid) legal() bool {
+func (g *Grid) legal() bool {
 	for xy := 0; xy < n*n; xy++ {
 		println(xy, g[xy], g.liberties(xy, 1))
-		if g[xy] != empty && g.liberties(xy, 1) == 0 {
+		if g[xy] != Empty && g.liberties(xy, 1) == 0 {
 			return false
 		}
 	}
 	return true
+}
+
+func (g* Grid) Neural(c Color) []float64 {
+	rc := make([]float64, n*n)
+	for xy := 0; xy < n*n; xy++ {
+		switch g[xy] {
+		case Empty:
+			rc[xy] = 0.5
+		case c:
+			rc[xy] = 1.0
+		default:
+			rc[xy] = 0.0
+		}
+	}
+
+	return rc
+}
+
+func (g* Grid) BestMove(s []float64) int {
+	rc := -1
+	for xy := 0; xy < n*n; xy++ {
+		if g[xy]==Empty && (rc<0 || s[xy]>s[rc]) {
+			rc = xy
+		}
+	}
+
+	return rc
 }
