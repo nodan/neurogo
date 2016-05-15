@@ -122,6 +122,38 @@ func (counter *Grid) count(xy int, g *Grid) *Grid {
 	return counter
 }
 
+// convert a string into a grid
+func Parse(s string) *Grid {
+	g := Grid{}
+	for xy:=0; xy<len(s); xy++ {
+		switch s[xy:xy+1] {
+		case "X":
+			g[xy] = Black
+		case "O":
+			g[xy] = White
+		}
+	}
+
+	return &g
+}
+
+// convert a grid into a string
+func (g* Grid) String() string {
+	s := ""
+	for xy:=0; xy<n*n; xy++ {
+		switch g[xy] {
+		case Black:
+			s += "X"
+		case White:
+			s += "O"
+		default:
+			s += "."
+		}
+	}
+
+	return s
+}
+
 // play a move
 func (g *Grid) MakeMove(xy int, c Color) *Grid {
 	if g[xy] != Empty {
@@ -153,7 +185,6 @@ func (g *Grid) MakeMove(xy int, c Color) *Grid {
 
 	return g
 }
-
 
 // check if the game is finished in the sense of there not being two adjacent Empty points and
 // every group having exactly two liberties

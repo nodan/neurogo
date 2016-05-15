@@ -146,3 +146,25 @@ func TestCountBoard(t *testing.T) {
 		t.Errorf("Board has score %v", g.Score())
 	}
 }
+
+func TestString(t *testing.T) {
+	g := Grid{}
+	if g.String() != "........." {
+		t.Errorf("Board string %v", g.String())
+	}
+
+	g.MakeMove(Xy(1, 1), Black)
+	if g.String() != "....X...." {
+		t.Errorf("Board string %v", g.String())
+	}
+
+	g.MakeMove(Xy(2, 1), White)
+	if g.String() != "....XO..." {
+		t.Errorf("Board string %v", g.String())
+	}
+
+	g.MakeMove(Xy(1, 0), Black)
+	if g.String() != ".X..XO..." {
+		t.Errorf("Board string %v", g.String())
+	}
+}
