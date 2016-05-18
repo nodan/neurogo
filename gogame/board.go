@@ -123,10 +123,16 @@ func (counter *Grid) count(xy int, g *Grid) *Grid {
 }
 
 // convert a string into a grid
-func Parse(s string) *Grid {
+func Parse(s string) (Color, *Grid) {
+	c := Color(Black)
 	g := Grid{}
-	for xy:=0; xy<len(s); xy++ {
-		switch s[xy:xy+1] {
+
+        if len(s)>0 && s[0:1]=="O" {
+		c = White
+	}
+
+        for xy:=0; xy+1<len(s); xy++ {
+		switch s[xy+1:xy+2] {
 		case "X":
 			g[xy] = Black
 		case "O":
@@ -134,7 +140,7 @@ func Parse(s string) *Grid {
 		}
 	}
 
-	return &g
+	return c, &g
 }
 
 // convert a grid into a string

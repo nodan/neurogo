@@ -16,23 +16,9 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 <head>
 <meta name="Content-Type" content="text/html; charset=UTF-8" />`);
 
-	// URL: <color to move><board>
+	// URL: "/<color to move><board>"
 	// with X=black, O=white, .=empty
-	url := r.URL.Path
-	for len(url)<2+gogame.Size {
-		url += "."
-	}
-
-	var c gogame.Color
-	c = gogame.Empty
-	switch url[1:2] {
-	case "X":
-		c = gogame.Black
-	case "O":
-		c = gogame.White
-	}
-
-	g := gogame.Parse(url[2:])
+	c, g := gogame.Parse(r.URL.Path[1:])
 	b := g.Neural(c)
 	s := n.Calculate(b)
 
