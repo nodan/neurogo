@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"neurogo/gogame"
 	"github.com/NOX73/go-neural"
 	"github.com/NOX73/go-neural/learn"
+	"net/http"
+	"neurogo/gogame"
 )
 
+// 3 layers: inputs, processing, outputs
 var n = neural.NewNetwork(9, []int{9, 81, 9})
 
+// handle http requests
 func boardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `
 <html>
 <head>
-<meta name="Content-Type" content="text/html; charset=UTF-8" />`);
+<meta name="Content-Type" content="text/html; charset=UTF-8" />`)
 
 	// URL: "/<color to move><board>"
 	// with X=black, O=white, .=empty
@@ -27,9 +29,9 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 <body>
 <p><table>`)
 	// print the go board as table
-	for y:=0; y<gogame.Size; y++ {
+	for y := 0; y < gogame.Size; y++ {
 		fmt.Fprintf(w, "<tr height=\"20px\">")
-		for x:=0; x<gogame.Size; x++ {
+		for x := 0; x < gogame.Size; x++ {
 			xy := gogame.Xy(x, y)
 			// show shades of red...green for 0...1
 			fmt.Fprintf(w, "<td align=\"center\" width=\"20px\" style=\"background-color:#%02x%02xbf\">",
@@ -53,11 +55,13 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// install the http handler
 	http.HandleFunc("/", boardHandler)
 
-	// 3 layers: inputs, processing, outputs
+	// start with a random network
 	n.RandomizeSynapses()
 
+	// learn that 1,1 is a good move
 	grid := &gogame.Grid{}
 	b := grid.Neural(gogame.Black)
 	s := append(b, 1)[0:9]
@@ -74,13 +78,15 @@ func main() {
 	// 	// fmt.Println("score", g.Board().Score())
 	// }
 
-	g := playAiSoloGame(n)
-	fmt.Println(g.ShowGame())
-	fmt.Printf("Score %v after %v moves\n", g.Board().Score(), len(g.Positions()))
+	// g := playAiSoloGame(n)
+	// fmt.Println(g.ShowGame())
+	// fmt.Printf("Score %v after %v moves\n", g.Board().Score(), len(g.Positions()))
 
+	// start the http server
 	http.ListenAndServe(":8080", nil)
 }
 
+// let the neural net play a game against itself
 func playAiSoloGame(n *neural.Network) *gogame.Game {
 	g := gogame.NewGame()
 	for !g.Finished() {
@@ -101,21 +107,24 @@ func playAiSoloGame(n *neural.Network) *gogame.Game {
 	return g
 }
 
+// find the best move, i.e. the highest value
 func bestMove(s []float64) int {
 	n := gogame.Size
 	rc := -1
 	for xy := 0; xy < n*n; xy++ {
-		if s[xy]>=0 && (rc<0 || s[xy]>s[rc]) {
+		if s[xy] >= 0 && (rc < 0 || s[xy] > s[rc]) {
 			rc = xy
 		}
 	}
 
-	if rc>=0 {
+	if rc >= 0 {
 		s[rc] = -1
 	}
 	return rc
 }
 
+// learn from a given game by promoting/demoting moves
+// of the winning/losing color
 func learnFrom(g *gogame.Game, n *neural.Network) {
 	pn := g.Positions()
 	score := g.Score()
@@ -125,7 +134,7 @@ func learnFrom(g *gogame.Game, n *neural.Network) {
 
 	var lost gogame.Color
 	lost = gogame.Black
-	if score>0 {
+	if score > 0 {
 		lost = gogame.White
 	}
 
@@ -141,16 +150,18 @@ func learnFrom(g *gogame.Game, n *neural.Network) {
 		c := g.Turn()
 		b := g.Board().Neural(c)
 		s := n.Calculate(b)
-		if c==lost && p.Move.MoveType!=gogame.Pass {
+		if c == lost && p.Move.MoveType != gogame.Pass {
 			demote(s, gogame.Xy(p.Move.X, p.Move.Y))
 			learn.Learn(n, b, s, 0.2)
-		} else if c != lost && p.Move.MoveType!=gogame.Pass {
+		} else if c != lost && p.Move.MoveType != gogame.Pass {
 			s[gogame.Xy(p.Move.X, p.Move.Y)] = 1
 			learn.Learn(n, b, s, 0.1)
 		}
 	}
 }
 
+// demote a given move either below the next best move or
+// simply to 0
 func demote(s []float64, xy int) {
 	//n := gogame.Size
 	// find the next best move
@@ -161,7 +172,7 @@ func demote(s []float64, xy int) {
 	//	}
 	// }
 
-	if nb>=0 {
+	if nb >= 0 {
 		// demote xy
 		s[xy] = 0 // s[nb]*0.9
 	}

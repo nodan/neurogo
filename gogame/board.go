@@ -2,7 +2,7 @@ package gogame
 
 const (
 	// board size
-	n = 3
+	n    = 3
 	Size = n
 
 	// Colors
@@ -127,12 +127,12 @@ func Parse(s string) (Color, *Grid) {
 	c := Color(Black)
 	g := Grid{}
 
-        if len(s)>0 && s[0:1]=="O" {
+	if len(s) > 0 && s[0:1] == "O" {
 		c = White
 	}
 
-        for xy:=0; xy+1<len(s); xy++ {
-		switch s[xy+1:xy+2] {
+	for xy := 0; xy+1 < len(s); xy++ {
+		switch s[xy+1 : xy+2] {
 		case "X":
 			g[xy] = Black
 		case "O":
@@ -144,9 +144,15 @@ func Parse(s string) (Color, *Grid) {
 }
 
 // convert a grid into a string
-func (g* Grid) String() string {
+func (g *Grid) String(c Color) string {
 	s := ""
-	for xy:=0; xy<n*n; xy++ {
+	if c == Black {
+		s += "X"
+	} else {
+		s += "O"
+	}
+
+	for xy := 0; xy < n*n; xy++ {
 		switch g[xy] {
 		case Black:
 			s += "X"
@@ -229,14 +235,16 @@ func (g *Grid) Finished() bool {
 	return true
 }
 
+// determine the score by counting black and white stones
+// as well as empty points surrounded by one color
 func (g *Grid) Score() int {
 	score := 0
 	for xy := 0; xy < n*n; xy++ {
 		switch g[xy] {
 		case Black:
-			score++;
+			score++
 		case White:
-			score--;
+			score--
 		case Empty:
 			bn := false
 			wn := false
@@ -248,9 +256,9 @@ func (g *Grid) Score() int {
 					wn = true
 				}
 			}
-			if (bn && !wn) {
+			if bn && !wn {
 				score++
-			} else if (!bn && wn) {
+			} else if !bn && wn {
 				score--
 			}
 		}
@@ -258,9 +266,10 @@ func (g *Grid) Score() int {
 	return score
 }
 
+// determine if the position is legal, i.e. all stones having
+// at least one liberty
 func (g *Grid) Legal() bool {
 	for xy := 0; xy < n*n; xy++ {
-		println(xy, g[xy], g.liberties(xy, 1))
 		if g[xy] != Empty && g.liberties(xy, 1) == 0 {
 			return false
 		}
@@ -268,7 +277,9 @@ func (g *Grid) Legal() bool {
 	return true
 }
 
-func (g* Grid) Neural(c Color) []float64 {
+// convert the board to an array of floats with 1.0 for the color
+// to move, 0.0 for the opposite color and 0.5 for empty points
+func (g *Grid) Neural(c Color) []float64 {
 	rc := make([]float64, n*n)
 	for xy := 0; xy < n*n; xy++ {
 		switch g[xy] {

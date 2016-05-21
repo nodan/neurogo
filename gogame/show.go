@@ -2,8 +2,8 @@ package gogame
 
 import (
 	"bytes"
-	"strings"
 	"fmt"
+	"strings"
 )
 
 func (g *Grid) Show() string {

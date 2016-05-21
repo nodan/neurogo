@@ -1,8 +1,8 @@
 package gogame
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestNewGameNotFinished(t *testing.T) {

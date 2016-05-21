@@ -5,15 +5,15 @@ import (
 )
 
 const (
-	LegalMove = 0
+	LegalMove   = 0
 	IllegalMove = 1
-	SuperKo = 2
+	SuperKo     = 2
 )
 
 type IllegalMoveReason byte
 
 const (
-	Pass = 0
+	Pass  = 0
 	Stone = 1
 )
 
@@ -42,7 +42,7 @@ func NewGame() *Game {
 }
 
 func (g *Game) Positions() []Position {
-	return g.positions;
+	return g.positions
 }
 
 func (g *Game) CurrentPosition() *Position {
@@ -74,14 +74,14 @@ func (g *Game) Score() int {
 	return g.CurrentPosition().Board.Score()
 }
 
-func (g *Game) Move(x,y int) bool {
+func (g *Game) Move(x, y int) bool {
 	player := g.Turn()
 	cpos := g.CurrentPosition()
 	grid := cpos.Board
 	if grid.MakeMove(Xy(x, y), player) == nil {
 		return false
 	}
-	pos := Position{ Invert(player), grid, emptyMove }
+	pos := Position{Invert(player), grid, emptyMove}
 	for _, p := range g.positions {
 		if p.Turn == pos.Turn && reflect.DeepEqual(p.Board, pos.Board) {
 			return false
@@ -95,5 +95,5 @@ func (g *Game) Move(x,y int) bool {
 func (g *Game) Pass() {
 	p := g.CurrentPosition()
 	p.Move = Move{Pass, 0, 0}
-	g.positions = append(g.positions, Position{ Invert(p.Turn), p.Board, emptyMove})
+	g.positions = append(g.positions, Position{Invert(p.Turn), p.Board, emptyMove})
 }
