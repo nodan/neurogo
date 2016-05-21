@@ -175,12 +175,12 @@ func TestRotateFlip(t *testing.T) {
 	r := []float64{0.7, 0.4, 0.1, 0.8, 0.5, 0.2, 0.9, 0.6, 0.3}
 	f := []float64{0.1, 0.4, 0.7, 0.2, 0.5, 0.8, 0.3, 0.6, 0.9}
 
-	sr := rotate(s)
+	sr := Rotate(s)
 	if !reflect.DeepEqual(sr, r) {
 		t.Errorf("Rotate error")
 	}
 
-	sf := flip(s)
+	sf := Flip(s)
 	if !reflect.DeepEqual(sf, f) {
 		t.Errorf("Flip error")
 	}

@@ -295,7 +295,7 @@ func (g *Grid) Neural(c Color) []float64 {
 }
 
 // rotate n*n plane clockwise
-func rotate(f []float64) []float64 {
+func Rotate(f []float64) []float64 {
 	g := make([]float64, n*n)
 	for y := 0; y < n; y++ {
 		for x := 0; x < n; x++ {
@@ -307,7 +307,7 @@ func rotate(f []float64) []float64 {
 }
 
 // flip n*n plane
-func flip(f []float64) []float64 {
+func Flip(f []float64) []float64 {
 	g := make([]float64, n*n)
 	for y := 0; y < n; y++ {
 		for x := 0; x < n; x++ {

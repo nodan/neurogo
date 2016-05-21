@@ -58,9 +58,9 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 func rotateAndLearn(n *neural.Network, b []float64, s []float64, weight float64) {
 	for i := 0; i < 8; i++ {
 		learn.Learn(n, b, s, weight)
-		s = gogame.rotate(s)
+		s = gogame.Rotate(s)
 		if i == 4 {
-			s = gogame.flip(s)
+			s = gogame.Flip(s)
 		}
 	}
 }
