@@ -54,6 +54,17 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 </html>`)
 }
 
+// learn from rotated/flipped plane
+func rotateAndLearn(n *neural.Network, b []float64, s []float64, weight float64) {
+	for i := 0; i < 8; i++ {
+		learn.Learn(n, b, s, weight)
+		s = gogame.rotate(s)
+		if i == 4 {
+			s = gogame.flip(s)
+		}
+	}
+}
+
 func main() {
 	// install the http handler
 	http.HandleFunc("/", boardHandler)
@@ -67,7 +78,7 @@ func main() {
 	s := append(b, 1)[0:9]
 	s[4] = 1
 	for i := 0; i < 1000; i++ {
-		learn.Learn(n, b, s, 1)
+		rotateAndLearn(n, b, s, 1)
 	}
 
 	// for i:=0; i < 10; i++ {

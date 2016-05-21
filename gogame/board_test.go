@@ -1,6 +1,7 @@
 package gogame
 
 import (
+	"reflect"
 	"testing"
 	//	"fmt"
 )
@@ -166,5 +167,21 @@ func TestString(t *testing.T) {
 	g.MakeMove(Xy(1, 0), Black)
 	if g.String(White) != "O.X..XO..." {
 		t.Errorf("Board string %v", g.String(White))
+	}
+}
+
+func TestRotateFlip(t *testing.T) {
+	s := []float64{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}
+	r := []float64{0.7, 0.4, 0.1, 0.8, 0.5, 0.2, 0.9, 0.6, 0.3}
+	f := []float64{0.1, 0.4, 0.7, 0.2, 0.5, 0.8, 0.3, 0.6, 0.9}
+
+	sr := rotate(s)
+	if !reflect.DeepEqual(sr, r) {
+		t.Errorf("Rotate error")
+	}
+
+	sf := flip(s)
+	if !reflect.DeepEqual(sf, f) {
+		t.Errorf("Flip error")
 	}
 }

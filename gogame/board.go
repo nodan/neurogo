@@ -293,3 +293,27 @@ func (g *Grid) Neural(c Color) []float64 {
 	}
 	return rc
 }
+
+// rotate n*n plane clockwise
+func rotate(f []float64) []float64 {
+	g := make([]float64, n*n)
+	for y := 0; y < n; y++ {
+		for x := 0; x < n; x++ {
+			g[Xy(n-y-1, x)] = f[Xy(x, y)]
+		}
+	}
+
+	return g
+}
+
+// flip n*n plane
+func flip(f []float64) []float64 {
+	g := make([]float64, n*n)
+	for y := 0; y < n; y++ {
+		for x := 0; x < n; x++ {
+			g[Xy(y, x)] = f[Xy(x, y)]
+		}
+	}
+
+	return g
+}
