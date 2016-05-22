@@ -6,6 +6,8 @@ import (
 	"github.com/NOX73/go-neural/learn"
 	"net/http"
 	"neurogo/gogame"
+	"regexp"
+	"strconv"
 )
 
 // 3 layers: inputs, processing, outputs
@@ -16,38 +18,135 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `
 <html>
 <head>
-<meta name="Content-Type" content="text/html; charset=UTF-8" />`)
+<meta name="Content-Type" content="text/html; charset=UTF-8" />
+<style type="text/css">
+    A:link    {text-decoration: none; color: blue}
+    A:visited {text-decoration: none; color: blue}
+    A:active  {text-decoration: none; color: blue}
+    A:hover   {text-decoration: none; color: red}
+</style>`)
 
 	// URL: "/<color to move><board>"
 	// with X=black, O=white, .=empty
+	// xy=... indicates pass/the move to play
+	// pass=1 indicates the previous move has been a pass
 	c, g := gogame.Parse(r.URL.Path[1:])
+	finished := false
+	illegal := false
+	pass := ""
+
+	if matched, _ := regexp.MatchString("^[0-9]+$", r.URL.Query().Get("xy")); matched {
+		// play the move given in the URL
+		xy, _ := strconv.ParseInt(r.URL.Query().Get("xy"), 0, 32)
+		if xy > 0 {
+			xy -= 1
+			b := g.Neural(c)
+			if g.MakeMove(int(xy), c) != nil {
+				c = gogame.Invert(c)
+
+				// learn the move just played
+				s := n.Calculate(b)
+				for i := 0; i < gogame.Size*gogame.Size; i++ {
+					s[i] /= 2
+				}
+				s[xy] = 1.0
+				rotateAndLearn(n, b, s, 0.1)
+			} else {
+				// the move has been illegal
+				illegal = true
+			}
+		} else {
+			// pass
+			if matched, _ := regexp.MatchString("^[0-9]+$", r.URL.Query().Get("pass")); !matched {
+				c = gogame.Invert(c)
+				pass = "&pass=1"
+			} else {
+				// the game is finished after two passes
+				finished = true
+			}
+		}
+	}
+
+	toMove := "Black"
+	if c == gogame.White {
+		toMove = "White"
+	}
+
 	b := g.Neural(c)
 	s := n.Calculate(b)
 
-	fmt.Fprintf(w, `
-</head>
-<body>
-<p><table>`)
+	if illegal {
+		fmt.Fprintf(w, "Illegal move<br>")
+	}
+
+	fmt.Fprintf(w, "</head><body>")
+	if !finished {
+		fmt.Fprintf(w, "%s to move", toMove)
+	}
+	fmt.Fprintf(w, "<p><table>")
+
 	// print the go board as table
 	for y := 0; y < gogame.Size; y++ {
 		fmt.Fprintf(w, "<tr height=\"20px\">")
 		for x := 0; x < gogame.Size; x++ {
 			xy := gogame.Xy(x, y)
 			// show shades of red...green for 0...1
-			fmt.Fprintf(w, "<td align=\"center\" width=\"20px\" style=\"background-color:#%02x%02xbf\">",
-				int(0xbf+0x40*(1.0-s[gogame.Xy(x, y)])),
-				int(0xbf+0x40*s[xy]))
+			fmt.Fprintf(w, "<td align=\"center\" width=\"20px\"")
 			switch g[xy] {
 			case gogame.Black:
-				fmt.Fprintf(w, "X")
+				fmt.Fprintf(w, " style=\"background-color:#dfdfbf\">X")
 			case gogame.White:
-				fmt.Fprintf(w, "O")
+				fmt.Fprintf(w, " style=\"background-color:#dfdfbf\">O")
+			default:
+				if !finished {
+					fmt.Fprintf(w, " style=\"background-color:#%02x%02xbf\"><a href=\"%s?xy=%d\">&nbsp;&nbsp;&nbsp;</a>",
+						int(0xbf+0x40*(1.0-s[gogame.Xy(x, y)])),
+						int(0xbf+0x40*s[xy]),
+						g.String(c),
+						xy+1)
+				} else {
+					fmt.Fprintf(w, " style=\"background-color:#dfdfbf\">&nbsp;&nbsp;&nbsp;")
+				}
 			}
 			fmt.Fprintf(w, "</td>")
 		}
 		fmt.Fprintf(w, "</tr>")
 	}
 	fmt.Fprintf(w, "</table>")
+
+	if !finished {
+		// allow to pass
+		fmt.Fprintf(w, "<a href=\"%s?xy=0%s\">Pass</a>", g.String(c), pass)
+	} else {
+		// the game ends after two passes
+		// calculate the score
+		not := "not"
+		if g.Finished() {
+			not = ""
+		}
+
+		score := g.Score()
+		result := "jigo"
+		switch {
+		case score < 0:
+			result = "white wins"
+		case score > 0:
+			result = "black wins"
+		}
+
+		// print the score
+		fmt.Fprintf(w, `
+<p>
+Both sides have passed
+<p>
+The game is %s finished<br>
+The score is %+d, %s
+<p>
+<a href="/">New game</a>`,
+			not,
+			score,
+			result)
+	}
 
 	fmt.Fprintf(w, `
 </body>
